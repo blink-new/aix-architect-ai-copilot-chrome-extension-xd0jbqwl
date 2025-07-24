@@ -46,7 +46,56 @@ export function VisualMapper({ framework, architectureData, components = [], cap
   })
 
   // Force show data if we have any components or capabilities
-  const shouldShowData = true // Always show data when components exist
+  const shouldShowData = components.length > 0 || capabilities.length > 0
+  
+  // If no data, create some test data for debugging
+  const testComponents: ArchitectureComponent[] = components.length > 0 ? components : [
+    {
+      id: 'test-1',
+      name: 'Customer Portal',
+      type: 'application',
+      description: 'Web-based customer portal application',
+      maturity: 75,
+      importance: 90,
+      dependencies: ['Authentication Service'],
+      risks: ['Performance bottlenecks'],
+      opportunities: ['Mobile optimization']
+    },
+    {
+      id: 'test-2',
+      name: 'Customer Management',
+      type: 'business',
+      description: 'Core customer relationship management capability',
+      maturity: 80,
+      importance: 95,
+      dependencies: ['CRM System'],
+      risks: ['Data quality'],
+      opportunities: ['AI integration']
+    }
+  ]
+  
+  const testCapabilities: BusinessCapability[] = capabilities.length > 0 ? capabilities : [
+    {
+      id: 'cap-1',
+      name: 'Customer Management',
+      description: 'Core customer relationship and experience management',
+      maturity: 70,
+      importance: 90,
+      processes: ['Customer Onboarding', 'Support Management'],
+      systems: ['CRM System', 'Customer Portal'],
+      gaps: ['Real-time analytics', 'Omnichannel integration']
+    },
+    {
+      id: 'cap-2',
+      name: 'Digital Experience',
+      description: 'Multi-channel customer experience delivery',
+      maturity: 60,
+      importance: 85,
+      processes: ['Content Management', 'User Experience'],
+      systems: ['Web Platform', 'Mobile Apps'],
+      gaps: ['Personalization', 'Real-time updates']
+    }
+  ]
 
   const visualizationTypes = [
     { id: 'heatmap', label: 'Capability Heatmap', icon: BarChart3 },
@@ -210,13 +259,13 @@ export function VisualMapper({ framework, architectureData, components = [], cap
                 ) : (
                   <div className="p-8 h-full">
                     {selectedVisualization === 'heatmap' && (
-                      <CapabilityHeatmap capabilities={capabilities} shouldShowData={shouldShowData} />
+                      <CapabilityHeatmap capabilities={testCapabilities} shouldShowData={true} />
                     )}
                     {selectedVisualization === 'architecture' && (
-                      <ArchitectureLayers components={components} framework={framework} shouldShowData={shouldShowData} />
+                      <ArchitectureLayers components={testComponents} framework={framework} shouldShowData={true} />
                     )}
                     {selectedVisualization === 'network' && (
-                      <DependencyNetwork components={components} shouldShowData={shouldShowData} />
+                      <DependencyNetwork components={testComponents} shouldShowData={true} />
                     )}
                     {selectedVisualization === 'roadmap' && (
                       <StrategicRoadmap architectureData={architectureData} shouldShowData={shouldShowData} />
