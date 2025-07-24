@@ -22,7 +22,8 @@ import {
   Building,
   Database,
   Server,
-  Layers
+  Layers,
+  Zap
 } from 'lucide-react'
 import { blink } from '../blink/client'
 import { useArchitectureStore } from '../hooks/useArchitectureStore'
@@ -569,6 +570,18 @@ Always provide specific, actionable recommendations rather than generic advice.`
       }
     })
     
+    // Add a message to show test data was generated
+    const testMessage: Message = {
+      id: Date.now().toString(),
+      type: 'scenario',
+      content: `🧪 **Test Data Generated**\\n\\n**Components:** ${testAnalysis.vision.components.length}\\n**Capabilities:** ${testAnalysis.vision.capabilities.length}\\n\\nTest architecture data has been generated and stored. Switch to Visual Mapper to see the components!`,
+      timestamp: new Date(),
+      framework,
+      confidence: 100
+    }
+    
+    setMessages(prev => [...prev, testMessage])
+    
     // Switch to Visual Mapper
     if (onArchitectureGenerated) {
       onArchitectureGenerated(testAnalysis)
@@ -858,6 +871,15 @@ Always provide specific, actionable recommendations rather than generic advice.`
               <Button variant="outline" size="sm" className="w-full justify-start">
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Export Conversation
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full justify-start bg-yellow-50 border-yellow-200 text-yellow-800 hover:bg-yellow-100"
+                onClick={handleTestData}
+              >
+                <Zap className="h-4 w-4 mr-2" />
+                Generate Test Data
               </Button>
             </CardContent>
           </Card>
