@@ -87,69 +87,6 @@ Share a real-world scenario, and I'll transform it into actionable architecture 
     "A healthcare organization is building a patient portal with telemedicine capabilities, electronic health records integration, and AI-assisted diagnostics while ensuring HIPAA compliance."
   ]
 
-  const createFallbackAnalysis = (scenario: string, fw: Framework): ScenarioAnalysis => {
-    return {
-      id: Date.now().toString(),
-      scenario,
-      framework: fw,
-      analysis: {
-        businessArchitecture: {
-          capabilities: [
-            {
-              id: 'cap-1',
-              name: 'Customer Management',
-              description: 'Core customer relationship and experience management',
-              maturity: 70,
-              importance: 90,
-              processes: ['Customer Onboarding', 'Support Management'],
-              systems: ['CRM System', 'Customer Portal'],
-              gaps: ['Real-time analytics', 'Omnichannel integration']
-            }
-          ],
-          processes: ['Customer Journey Management', 'Service Delivery'],
-          stakeholders: ['Business Users', 'IT Team', 'Customers']
-        },
-        applicationArchitecture: {
-          applications: ['Customer Portal', 'Mobile App', 'Backend Services'],
-          services: ['Authentication Service', 'Notification Service'],
-          interfaces: ['REST APIs', 'GraphQL', 'Message Queues']
-        },
-        dataArchitecture: {
-          entities: ['Customer', 'Transaction', 'Product'],
-          flows: ['Customer Data Flow', 'Transaction Processing'],
-          governance: ['Data Quality', 'Privacy Controls']
-        },
-        technologyArchitecture: {
-          infrastructure: ['Cloud Platform', 'CDN', 'Load Balancers'],
-          platforms: ['Container Platform', 'API Gateway'],
-          networks: ['VPN', 'Private Networks']
-        }
-      },
-      recommendations: ['Implement microservices architecture', 'Establish data governance'],
-      risks: ['Legacy system integration', 'Data security'],
-      opportunities: ['AI/ML integration', 'Process automation'],
-      vision: {
-        id: Date.now().toString(),
-        title: `${fw} Architecture Vision`,
-        description: 'Comprehensive architecture vision based on scenario analysis',
-        objectives: ['Improve customer experience', 'Enhance operational efficiency'],
-        stakeholders: ['Business Users', 'IT Team', 'Customers'],
-        constraints: ['Budget limitations', 'Timeline constraints'],
-        assumptions: ['Cloud-first approach', 'Agile delivery'],
-        components: [],
-        capabilities: [],
-        timeline: [
-          {
-            phase: 'Phase 1: Foundation',
-            duration: 'Q1-Q2 2024',
-            deliverables: ['Architecture Blueprint', 'Technology Stack'],
-            status: 'planned' as const
-          }
-        ]
-      }
-    }
-  }
-
   const createComponentsFromAnalysis = (analysis: any): ArchitectureComponent[] => {
     const components: ArchitectureComponent[] = []
     
@@ -214,6 +151,89 @@ Share a real-world scenario, and I'll transform it into actionable architecture 
     })
 
     return components
+  }
+
+  const createFallbackAnalysis = (scenario: string, fw: Framework): ScenarioAnalysis => {
+    const analysisData = {
+      businessArchitecture: {
+        capabilities: [
+          {
+            id: 'cap-1',
+            name: 'Customer Management',
+            description: 'Core customer relationship and experience management',
+            maturity: 70,
+            importance: 90,
+            processes: ['Customer Onboarding', 'Support Management'],
+            systems: ['CRM System', 'Customer Portal'],
+            gaps: ['Real-time analytics', 'Omnichannel integration']
+          },
+          {
+            id: 'cap-2',
+            name: 'Digital Experience',
+            description: 'Multi-channel customer experience delivery',
+            maturity: 60,
+            importance: 85,
+            processes: ['Content Management', 'User Experience'],
+            systems: ['Web Platform', 'Mobile Apps'],
+            gaps: ['Personalization', 'Real-time updates']
+          }
+        ],
+        processes: ['Customer Journey Management', 'Service Delivery'],
+        stakeholders: ['Business Users', 'IT Team', 'Customers']
+      },
+      applicationArchitecture: {
+        applications: ['Customer Portal', 'Mobile App', 'Backend Services', 'Analytics Platform'],
+        services: ['Authentication Service', 'Notification Service', 'Payment Service'],
+        interfaces: ['REST APIs', 'GraphQL', 'Message Queues']
+      },
+      dataArchitecture: {
+        entities: ['Customer', 'Transaction', 'Product', 'Analytics'],
+        flows: ['Customer Data Flow', 'Transaction Processing', 'Analytics Pipeline'],
+        governance: ['Data Quality', 'Privacy Controls', 'Master Data Management']
+      },
+      technologyArchitecture: {
+        infrastructure: ['Cloud Platform', 'CDN', 'Load Balancers', 'Monitoring'],
+        platforms: ['Container Platform', 'API Gateway', 'Database Cluster'],
+        networks: ['VPN', 'Private Networks', 'Security Zones']
+      }
+    }
+
+    const components = createComponentsFromAnalysis(analysisData)
+    
+    return {
+      id: Date.now().toString(),
+      scenario,
+      framework: fw,
+      analysis: analysisData,
+      recommendations: ['Implement microservices architecture', 'Establish data governance', 'Enhance security controls'],
+      risks: ['Legacy system integration', 'Data security', 'Performance bottlenecks'],
+      opportunities: ['AI/ML integration', 'Process automation', 'Cloud optimization'],
+      vision: {
+        id: Date.now().toString(),
+        title: `${fw} Architecture Vision for ${scenario.slice(0, 50)}...`,
+        description: 'Comprehensive architecture vision based on scenario analysis',
+        objectives: ['Improve customer experience', 'Enhance operational efficiency', 'Reduce technical debt'],
+        stakeholders: ['Business Users', 'IT Team', 'Customers', 'Management'],
+        constraints: ['Budget limitations', 'Timeline constraints', 'Regulatory requirements'],
+        assumptions: ['Cloud-first approach', 'Agile delivery', 'DevOps practices'],
+        components,
+        capabilities: analysisData.businessArchitecture.capabilities,
+        timeline: [
+          {
+            phase: 'Phase 1: Foundation',
+            duration: 'Q1-Q2 2024',
+            deliverables: ['Architecture Blueprint', 'Technology Stack', 'Security Framework'],
+            status: 'planned' as const
+          },
+          {
+            phase: 'Phase 2: Implementation',
+            duration: 'Q3-Q4 2024',
+            deliverables: ['Core Services', 'Data Platform', 'Integration Layer'],
+            status: 'planned' as const
+          }
+        ]
+      }
+    }
   }
 
   const analyzeScenario = async (scenario: string): Promise<ScenarioAnalysis> => {
@@ -413,11 +433,16 @@ Always provide specific, actionable recommendations rather than generic advice.`
       // Add the analysis to the architecture store
       architectureStore.addScenario(analysis)
       
+      // Debug logging
+      console.log('Generated Analysis:', analysis)
+      console.log('Components:', analysis.vision.components)
+      console.log('Capabilities:', analysis.vision.capabilities)
+      
       // Add a message showing the analysis results
       const analysisMessage: Message = {
         id: Date.now().toString(),
         type: 'scenario',
-        content: `🎯 **Scenario Analysis Complete**\n\n**Vision:** ${analysis.vision.title}\n\n**Key Findings:**\n• ${analysis.recommendations.slice(0, 3).join('\n• ')}\n\n**Architecture Components Generated:** ${analysis.vision.components.length}\n**Business Capabilities Identified:** ${analysis.vision.capabilities.length}\n\nThe complete architecture vision and components have been generated and are now available in the Visual Mapper!`,
+        content: `🎯 **Scenario Analysis Complete**\n\n**Vision:** ${analysis.vision.title}\n\n**Key Findings:**\n• ${analysis.recommendations.slice(0, 3).join('\n• ')}\n\n**Architecture Components Generated:** ${analysis.vision.components.length}\n**Business Capabilities Identified:** ${analysis.vision.capabilities.length}\n\n**Components by Type:**\n• Business: ${analysis.vision.components.filter(c => c.type === 'business').length}\n• Application: ${analysis.vision.components.filter(c => c.type === 'application').length}\n• Data: ${analysis.vision.components.filter(c => c.type === 'data').length}\n• Technology: ${analysis.vision.components.filter(c => c.type === 'technology').length}\n\nThe complete architecture vision and components have been generated and are now available in the Visual Mapper!`,
         timestamp: new Date(),
         framework,
         confidence: 95,

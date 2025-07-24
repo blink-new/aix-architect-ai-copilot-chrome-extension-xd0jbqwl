@@ -19,6 +19,10 @@ function App() {
   const architectureStore = useArchitectureStore()
 
   const handleArchitectureGenerated = (analysis: ScenarioAnalysis) => {
+    // Debug logging
+    console.log('App received architecture analysis:', analysis)
+    console.log('Architecture store state:', architectureStore)
+    
     // Switch to Visual Mapper to show the generated components
     setCurrentView('mapper')
   }

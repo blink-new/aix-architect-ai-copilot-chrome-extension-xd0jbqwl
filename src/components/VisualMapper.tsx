@@ -34,6 +34,14 @@ export function VisualMapper({ framework, architectureData, components = [], cap
   const [isGenerating, setIsGenerating] = useState(false)
 
   const hasData = architectureData && (components.length > 0 || capabilities.length > 0)
+  
+  // Debug logging
+  console.log('VisualMapper received:', { 
+    architectureData, 
+    components: components.length, 
+    capabilities: capabilities.length,
+    hasData 
+  })
 
   const visualizationTypes = [
     { id: 'heatmap', label: 'Capability Heatmap', icon: BarChart3 },
