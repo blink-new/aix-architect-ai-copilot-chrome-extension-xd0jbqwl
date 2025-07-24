@@ -230,7 +230,7 @@ export function VisualMapper({ framework, architectureData, components = [], cap
 }
 
 function CapabilityHeatmap({ capabilities, hasData }: { capabilities: BusinessCapability[], hasData: boolean }) {
-  if (!hasData || capabilities.length === 0) {
+  if (capabilities.length === 0) {
     return (
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-900">Business Capability Heatmap</h3>
@@ -297,7 +297,7 @@ function ArchitectureLayers({ components, framework, hasData }: {
   framework: Framework, 
   hasData: boolean 
 }) {
-  if (!hasData || components.length === 0) {
+  if (components.length === 0) {
     return (
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-900">{framework} Architecture Layers</h3>
@@ -375,7 +375,7 @@ function ArchitectureLayers({ components, framework, hasData }: {
 }
 
 function DependencyNetwork({ components, hasData }: { components: ArchitectureComponent[], hasData: boolean }) {
-  if (!hasData || components.length === 0) {
+  if (components.length === 0) {
     return (
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-900">System Dependency Network</h3>
@@ -428,7 +428,7 @@ function StrategicRoadmap({ architectureData, hasData }: {
   architectureData?: ArchitectureVision | null, 
   hasData: boolean 
 }) {
-  if (!hasData || !architectureData?.timeline || architectureData.timeline.length === 0) {
+  if (!architectureData?.timeline || architectureData.timeline.length === 0) {
     return (
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-900">Strategic Implementation Roadmap</h3>
