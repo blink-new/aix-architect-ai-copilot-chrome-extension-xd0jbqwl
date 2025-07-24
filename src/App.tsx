@@ -5,6 +5,8 @@ import { StrategyCoach } from './components/StrategyCoach'
 import { VisualMapper } from './components/VisualMapper'
 import { ComplianceRadar } from './components/ComplianceRadar'
 import { Toaster } from './components/ui/toaster'
+import { useArchitectureStore } from './hooks/useArchitectureStore'
+import type { ScenarioAnalysis } from './types/architecture'
 import './App.css'
 
 export type Framework = 'TOGAF' | 'Zachman' | 'ISO42001' | 'Custom'
@@ -14,13 +16,31 @@ function App() {
   const [selectedFramework, setSelectedFramework] = useState<Framework>('TOGAF')
   const [currentView, setCurrentView] = useState<ViewMode>('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const architectureStore = useArchitectureStore()
+
+  const handleArchitectureGenerated = (analysis: ScenarioAnalysis) => {
+    // Switch to Visual Mapper to show the generated components
+    setCurrentView('mapper')
+  }
 
   const renderCurrentView = () => {
     switch (currentView) {
       case 'coach':
-        return <StrategyCoach framework={selectedFramework} />
+        return (
+          <StrategyCoach 
+            framework={selectedFramework} 
+            onArchitectureGenerated={handleArchitectureGenerated}
+          />
+        )
       case 'mapper':
-        return <VisualMapper framework={selectedFramework} />
+        return (
+          <VisualMapper 
+            framework={selectedFramework}
+            architectureData={architectureStore.currentVision}
+            components={architectureStore.components}
+            capabilities={architectureStore.capabilities}
+          />
+        )
       case 'compliance':
         return <ComplianceRadar framework={selectedFramework} />
       default:

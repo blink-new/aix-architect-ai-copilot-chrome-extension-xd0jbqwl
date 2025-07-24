@@ -13,17 +13,27 @@ import {
   Calendar,
   Zap,
   Eye,
-  Settings
+  Settings,
+  Building,
+  Database,
+  Server,
+  Users
 } from 'lucide-react'
 import type { Framework } from '../App'
+import type { ArchitectureVision, ArchitectureComponent, BusinessCapability } from '../types/architecture'
 
 interface VisualMapperProps {
   framework: Framework
+  architectureData?: ArchitectureVision | null
+  components?: ArchitectureComponent[]
+  capabilities?: BusinessCapability[]
 }
 
-export function VisualMapper({ framework }: VisualMapperProps) {
+export function VisualMapper({ framework, architectureData, components = [], capabilities = [] }: VisualMapperProps) {
   const [selectedVisualization, setSelectedVisualization] = useState('heatmap')
   const [isGenerating, setIsGenerating] = useState(false)
+
+  const hasData = architectureData && (components.length > 0 || capabilities.length > 0)
 
   const visualizationTypes = [
     { id: 'heatmap', label: 'Capability Heatmap', icon: BarChart3 },
@@ -186,10 +196,18 @@ export function VisualMapper({ framework }: VisualMapperProps) {
                   </div>
                 ) : (
                   <div className="p-8 h-full">
-                    {selectedVisualization === 'heatmap' && <CapabilityHeatmap />}
-                    {selectedVisualization === 'architecture' && <ArchitectureLayers />}
-                    {selectedVisualization === 'network' && <DependencyNetwork />}
-                    {selectedVisualization === 'roadmap' && <StrategicRoadmap />}
+                    {selectedVisualization === 'heatmap' && (
+                      <CapabilityHeatmap capabilities={capabilities} hasData={hasData} />
+                    )}
+                    {selectedVisualization === 'architecture' && (
+                      <ArchitectureLayers components={components} framework={framework} hasData={hasData} />
+                    )}
+                    {selectedVisualization === 'network' && (
+                      <DependencyNetwork components={components} hasData={hasData} />
+                    )}
+                    {selectedVisualization === 'roadmap' && (
+                      <StrategicRoadmap architectureData={architectureData} hasData={hasData} />
+                    )}
                   </div>
                 )}
               </div>
@@ -201,15 +219,21 @@ export function VisualMapper({ framework }: VisualMapperProps) {
   )
 }
 
-function CapabilityHeatmap() {
-  const capabilities = [
-    { name: 'Customer Management', maturity: 85, importance: 90 },
-    { name: 'Product Development', maturity: 70, importance: 95 },
-    { name: 'Supply Chain', maturity: 60, importance: 80 },
-    { name: 'Digital Marketing', maturity: 90, importance: 85 },
-    { name: 'Data Analytics', maturity: 45, importance: 95 },
-    { name: 'Cybersecurity', maturity: 75, importance: 100 }
-  ]
+function CapabilityHeatmap({ capabilities, hasData }: { capabilities: BusinessCapability[], hasData: boolean }) {
+  if (!hasData || capabilities.length === 0) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-slate-900">Business Capability Heatmap</h3>
+        <div className="flex items-center justify-center h-64 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+          <div className="text-center text-slate-500">
+            <BarChart3 className="h-16 w-16 mx-auto mb-4 text-slate-300" />
+            <p className="text-lg font-medium">No Capability Data Available</p>
+            <p className="text-sm">Use the Strategy Coach to analyze a scenario and generate capability models</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4">
@@ -225,6 +249,7 @@ function CapabilityHeatmap() {
             }`}
           >
             <h4 className="font-medium text-slate-900 mb-2">{cap.name}</h4>
+            <p className="text-xs text-slate-600 mb-3">{cap.description}</p>
             <div className="space-y-1">
               <div className="flex justify-between text-sm">
                 <span>Maturity</span>
@@ -243,6 +268,12 @@ function CapabilityHeatmap() {
                 <span>Importance</span>
                 <span>{cap.importance}%</span>
               </div>
+              {cap.gaps && cap.gaps.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-xs font-medium text-red-700">Key Gaps:</p>
+                  <p className="text-xs text-red-600">{cap.gaps.slice(0, 2).join(', ')}</p>
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -251,65 +282,178 @@ function CapabilityHeatmap() {
   )
 }
 
-function ArchitectureLayers() {
-  const layers = [
-    { name: 'Business Architecture', components: ['Processes', 'Capabilities', 'Organization'] },
-    { name: 'Application Architecture', components: ['Applications', 'Services', 'Interfaces'] },
-    { name: 'Data Architecture', components: ['Data Models', 'Data Flow', 'Data Governance'] },
-    { name: 'Technology Architecture', components: ['Infrastructure', 'Platforms', 'Networks'] }
-  ]
+function ArchitectureLayers({ components, framework, hasData }: { 
+  components: ArchitectureComponent[], 
+  framework: Framework, 
+  hasData: boolean 
+}) {
+  if (!hasData || components.length === 0) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-slate-900">{framework} Architecture Layers</h3>
+        <div className="flex items-center justify-center h-64 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+          <div className="text-center text-slate-500">
+            <Layers className="h-16 w-16 mx-auto mb-4 text-slate-300" />
+            <p className="text-lg font-medium">No Architecture Components Available</p>
+            <p className="text-sm">Use the Strategy Coach to analyze a scenario and generate architecture layers</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const layerIcons = {
+    business: Building,
+    application: Server,
+    data: Database,
+    technology: Network
+  }
+
+  const layerColors = {
+    business: 'border-green-200 bg-green-50',
+    application: 'border-blue-200 bg-blue-50',
+    data: 'border-purple-200 bg-purple-50',
+    technology: 'border-orange-200 bg-orange-50'
+  }
+
+  const layerNames = {
+    business: 'Business Architecture',
+    application: 'Application Architecture', 
+    data: 'Data Architecture',
+    technology: 'Technology Architecture'
+  }
+
+  const groupedComponents = components.reduce((acc, component) => {
+    if (!acc[component.type]) {
+      acc[component.type] = []
+    }
+    acc[component.type].push(component)
+    return acc
+  }, {} as Record<string, ArchitectureComponent[]>)
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-slate-900">TOGAF Architecture Layers</h3>
+      <h3 className="text-lg font-semibold text-slate-900">{framework} Architecture Layers</h3>
       <div className="space-y-3">
-        {layers.map((layer, index) => (
-          <div key={index} className="bg-white rounded-lg border-2 border-blue-200 p-4">
-            <h4 className="font-medium text-blue-900 mb-3">{layer.name}</h4>
-            <div className="flex space-x-2">
-              {layer.components.map((component, compIndex) => (
-                <Badge key={compIndex} variant="secondary" className="bg-blue-50 text-blue-700">
-                  {component}
-                </Badge>
-              ))}
+        {Object.entries(groupedComponents).map(([layerType, layerComponents]) => {
+          const Icon = layerIcons[layerType as keyof typeof layerIcons] || Building
+          return (
+            <div key={layerType} className={`rounded-lg border-2 p-4 ${layerColors[layerType as keyof typeof layerColors]}`}>
+              <div className="flex items-center mb-3">
+                <Icon className="h-5 w-5 mr-2 text-slate-700" />
+                <h4 className="font-medium text-slate-900">{layerNames[layerType as keyof typeof layerNames]}</h4>
+                <Badge variant="secondary" className="ml-2">{layerComponents.length}</Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {layerComponents.map((component, compIndex) => (
+                  <div key={compIndex} className="bg-white rounded p-2 border">
+                    <p className="text-sm font-medium text-slate-900">{component.name}</p>
+                    <p className="text-xs text-slate-600 mt-1">{component.description}</p>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-xs text-slate-500">Maturity: {component.maturity}%</span>
+                      <span className="text-xs text-slate-500">Priority: {component.importance}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
 }
 
-function DependencyNetwork() {
+function DependencyNetwork({ components, hasData }: { components: ArchitectureComponent[], hasData: boolean }) {
+  if (!hasData || components.length === 0) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-slate-900">System Dependency Network</h3>
+        <div className="flex items-center justify-center h-64 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+          <div className="text-center text-slate-500">
+            <Network className="h-16 w-16 mx-auto mb-4 text-slate-300" />
+            <p className="text-lg font-medium">No Dependency Data Available</p>
+            <p className="text-sm">Use the Strategy Coach to analyze a scenario and generate component dependencies</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-slate-900">System Dependency Network</h3>
-      <div className="relative h-80 bg-white rounded-lg border-2 border-slate-200 p-4">
-        <div className="absolute inset-4 flex items-center justify-center">
-          <div className="text-center text-slate-500">
-            <Network className="h-16 w-16 mx-auto mb-4 text-slate-300" />
-            <p>Interactive dependency visualization</p>
-            <p className="text-sm">Shows relationships between systems and components</p>
-          </div>
+      <div className="bg-white rounded-lg border-2 border-slate-200 p-6">
+        <div className="grid grid-cols-4 gap-4">
+          {components.slice(0, 12).map((component, index) => (
+            <div key={index} className="relative">
+              <div className={`p-3 rounded-lg border-2 text-center ${
+                component.type === 'business' ? 'bg-green-50 border-green-200' :
+                component.type === 'application' ? 'bg-blue-50 border-blue-200' :
+                component.type === 'data' ? 'bg-purple-50 border-purple-200' :
+                'bg-orange-50 border-orange-200'
+              }`}>
+                <p className="text-xs font-medium text-slate-900">{component.name}</p>
+                <p className="text-xs text-slate-600 mt-1">{component.type}</p>
+                {component.dependencies.length > 0 && (
+                  <Badge variant="outline" className="mt-2 text-xs">
+                    {component.dependencies.length} deps
+                  </Badge>
+                )}
+              </div>
+              {/* Connection lines would be drawn here in a real implementation */}
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 text-center text-slate-500">
+          <p className="text-sm">Interactive dependency visualization</p>
+          <p className="text-xs">Showing {Math.min(components.length, 12)} of {components.length} components</p>
         </div>
       </div>
     </div>
   )
 }
 
-function StrategicRoadmap() {
-  const phases = [
-    { name: 'Phase 1: Foundation', duration: 'Q1-Q2 2024', status: 'completed' },
-    { name: 'Phase 2: Transformation', duration: 'Q3-Q4 2024', status: 'in-progress' },
-    { name: 'Phase 3: Optimization', duration: 'Q1-Q2 2025', status: 'planned' },
-    { name: 'Phase 4: Innovation', duration: 'Q3-Q4 2025', status: 'planned' }
-  ]
+function StrategicRoadmap({ architectureData, hasData }: { 
+  architectureData?: ArchitectureVision | null, 
+  hasData: boolean 
+}) {
+  if (!hasData || !architectureData?.timeline || architectureData.timeline.length === 0) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-slate-900">Strategic Implementation Roadmap</h3>
+        <div className="flex items-center justify-center h-64 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+          <div className="text-center text-slate-500">
+            <Calendar className="h-16 w-16 mx-auto mb-4 text-slate-300" />
+            <p className="text-lg font-medium">No Roadmap Data Available</p>
+            <p className="text-sm">Use the Strategy Coach to analyze a scenario and generate implementation timeline</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-slate-900">Strategic Implementation Roadmap</h3>
+      {architectureData.title && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <h4 className="font-semibold text-blue-900">{architectureData.title}</h4>
+          <p className="text-sm text-blue-700 mt-1">{architectureData.description}</p>
+          {architectureData.objectives.length > 0 && (
+            <div className="mt-2">
+              <p className="text-xs font-medium text-blue-800">Key Objectives:</p>
+              <ul className="text-xs text-blue-700 mt-1">
+                {architectureData.objectives.slice(0, 3).map((objective, index) => (
+                  <li key={index}>• {objective}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
       <div className="space-y-3">
-        {phases.map((phase, index) => (
+        {architectureData.timeline.map((phase, index) => (
           <div key={index} className="flex items-center space-x-4">
             <div className={`w-4 h-4 rounded-full ${
               phase.status === 'completed' ? 'bg-green-500' :
@@ -317,7 +461,7 @@ function StrategicRoadmap() {
             }`}></div>
             <div className="flex-1 bg-white rounded-lg border p-3">
               <div className="flex justify-between items-center">
-                <h4 className="font-medium text-slate-900">{phase.name}</h4>
+                <h4 className="font-medium text-slate-900">{phase.phase}</h4>
                 <Badge 
                   variant={phase.status === 'completed' ? 'default' : 'secondary'}
                   className={
@@ -330,6 +474,18 @@ function StrategicRoadmap() {
                 </Badge>
               </div>
               <p className="text-sm text-slate-600 mt-1">{phase.duration}</p>
+              {phase.deliverables.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-xs font-medium text-slate-700">Key Deliverables:</p>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {phase.deliverables.slice(0, 4).map((deliverable, delIndex) => (
+                      <Badge key={delIndex} variant="outline" className="text-xs">
+                        {deliverable}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}
