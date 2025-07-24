@@ -45,6 +45,9 @@ export function VisualMapper({ framework, architectureData, components = [], cap
     capabilitiesData: capabilities
   })
 
+  // Force show data if we have any components or capabilities
+  const shouldShowData = components.length > 0 || capabilities.length > 0
+
   const visualizationTypes = [
     { id: 'heatmap', label: 'Capability Heatmap', icon: BarChart3 },
     { id: 'architecture', label: 'Architecture Layers', icon: Layers },
@@ -207,16 +210,16 @@ export function VisualMapper({ framework, architectureData, components = [], cap
                 ) : (
                   <div className="p-8 h-full">
                     {selectedVisualization === 'heatmap' && (
-                      <CapabilityHeatmap capabilities={capabilities} hasData={hasData} />
+                      <CapabilityHeatmap capabilities={capabilities} shouldShowData={shouldShowData} />
                     )}
                     {selectedVisualization === 'architecture' && (
-                      <ArchitectureLayers components={components} framework={framework} hasData={hasData} />
+                      <ArchitectureLayers components={components} framework={framework} shouldShowData={shouldShowData} />
                     )}
                     {selectedVisualization === 'network' && (
-                      <DependencyNetwork components={components} hasData={hasData} />
+                      <DependencyNetwork components={components} shouldShowData={shouldShowData} />
                     )}
                     {selectedVisualization === 'roadmap' && (
-                      <StrategicRoadmap architectureData={architectureData} hasData={hasData} />
+                      <StrategicRoadmap architectureData={architectureData} shouldShowData={shouldShowData} />
                     )}
                   </div>
                 )}
@@ -229,7 +232,7 @@ export function VisualMapper({ framework, architectureData, components = [], cap
   )
 }
 
-function CapabilityHeatmap({ capabilities, hasData }: { capabilities: BusinessCapability[], hasData: boolean }) {
+function CapabilityHeatmap({ capabilities, shouldShowData }: { capabilities: BusinessCapability[], shouldShowData: boolean }) {
   if (capabilities.length === 0) {
     return (
       <div className="space-y-4">
@@ -292,10 +295,10 @@ function CapabilityHeatmap({ capabilities, hasData }: { capabilities: BusinessCa
   )
 }
 
-function ArchitectureLayers({ components, framework, hasData }: { 
+function ArchitectureLayers({ components, framework, shouldShowData }: { 
   components: ArchitectureComponent[], 
   framework: Framework, 
-  hasData: boolean 
+  shouldShowData: boolean 
 }) {
   if (components.length === 0) {
     return (
@@ -374,7 +377,7 @@ function ArchitectureLayers({ components, framework, hasData }: {
   )
 }
 
-function DependencyNetwork({ components, hasData }: { components: ArchitectureComponent[], hasData: boolean }) {
+function DependencyNetwork({ components, shouldShowData }: { components: ArchitectureComponent[], shouldShowData: boolean }) {
   if (components.length === 0) {
     return (
       <div className="space-y-4">
@@ -424,9 +427,9 @@ function DependencyNetwork({ components, hasData }: { components: ArchitectureCo
   )
 }
 
-function StrategicRoadmap({ architectureData, hasData }: { 
+function StrategicRoadmap({ architectureData, shouldShowData }: { 
   architectureData?: ArchitectureVision | null, 
-  hasData: boolean 
+  shouldShowData: boolean 
 }) {
   if (!architectureData?.timeline || architectureData.timeline.length === 0) {
     return (
