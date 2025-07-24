@@ -90,66 +90,111 @@ Share a real-world scenario, and I'll transform it into actionable architecture 
   const createComponentsFromAnalysis = (analysis: any): ArchitectureComponent[] => {
     const components: ArchitectureComponent[] = []
     
-    // Business components
-    analysis.businessArchitecture?.capabilities?.forEach((cap: any, index: number) => {
-      components.push({
-        id: `business-${index}`,
-        name: cap.name,
-        type: 'business',
-        description: cap.description,
-        maturity: cap.maturity,
-        importance: cap.importance,
-        dependencies: cap.systems || [],
-        risks: cap.gaps || [],
-        opportunities: []
+    console.log('Creating components from analysis:', analysis)
+    
+    // Business components from capabilities
+    if (analysis.businessArchitecture?.capabilities) {
+      analysis.businessArchitecture.capabilities.forEach((cap: any, index: number) => {
+        components.push({
+          id: `business-${cap.id || index}`,
+          name: cap.name || `Business Capability ${index + 1}`,
+          type: 'business',
+          description: cap.description || `Business capability: ${cap.name}`,
+          maturity: cap.maturity || Math.floor(Math.random() * 40) + 60,
+          importance: cap.importance || Math.floor(Math.random() * 30) + 70,
+          dependencies: cap.systems || [],
+          risks: cap.gaps || [],
+          opportunities: cap.processes || []
+        })
       })
-    })
+    }
 
     // Application components
-    analysis.applicationArchitecture?.applications?.forEach((app: string, index: number) => {
-      components.push({
-        id: `app-${index}`,
-        name: app,
-        type: 'application',
-        description: `Application component: ${app}`,
-        maturity: Math.floor(Math.random() * 40) + 60,
-        importance: Math.floor(Math.random() * 30) + 70,
-        dependencies: [],
-        risks: [],
-        opportunities: []
+    if (analysis.applicationArchitecture?.applications) {
+      analysis.applicationArchitecture.applications.forEach((app: string, index: number) => {
+        components.push({
+          id: `app-${index}`,
+          name: app,
+          type: 'application',
+          description: `Application component: ${app}`,
+          maturity: Math.floor(Math.random() * 40) + 60,
+          importance: Math.floor(Math.random() * 30) + 70,
+          dependencies: analysis.applicationArchitecture?.services?.slice(0, 2) || [],
+          risks: ['Integration complexity', 'Performance bottlenecks'],
+          opportunities: ['Microservices migration', 'Cloud optimization']
+        })
       })
-    })
+    }
+
+    // Application services as components
+    if (analysis.applicationArchitecture?.services) {
+      analysis.applicationArchitecture.services.forEach((service: string, index: number) => {
+        components.push({
+          id: `service-${index}`,
+          name: service,
+          type: 'application',
+          description: `Service component: ${service}`,
+          maturity: Math.floor(Math.random() * 40) + 60,
+          importance: Math.floor(Math.random() * 30) + 70,
+          dependencies: [],
+          risks: ['Service availability', 'API versioning'],
+          opportunities: ['Service mesh', 'Auto-scaling']
+        })
+      })
+    }
 
     // Data components
-    analysis.dataArchitecture?.entities?.forEach((entity: string, index: number) => {
-      components.push({
-        id: `data-${index}`,
-        name: entity,
-        type: 'data',
-        description: `Data entity: ${entity}`,
-        maturity: Math.floor(Math.random() * 40) + 60,
-        importance: Math.floor(Math.random() * 30) + 70,
-        dependencies: [],
-        risks: [],
-        opportunities: []
+    if (analysis.dataArchitecture?.entities) {
+      analysis.dataArchitecture.entities.forEach((entity: string, index: number) => {
+        components.push({
+          id: `data-${index}`,
+          name: entity,
+          type: 'data',
+          description: `Data entity: ${entity}`,
+          maturity: Math.floor(Math.random() * 40) + 60,
+          importance: Math.floor(Math.random() * 30) + 70,
+          dependencies: analysis.dataArchitecture?.flows?.slice(0, 1) || [],
+          risks: ['Data quality', 'Privacy compliance'],
+          opportunities: ['Data lake', 'Real-time analytics']
+        })
       })
-    })
+    }
 
-    // Technology components
-    analysis.technologyArchitecture?.infrastructure?.forEach((infra: string, index: number) => {
-      components.push({
-        id: `tech-${index}`,
-        name: infra,
-        type: 'technology',
-        description: `Technology component: ${infra}`,
-        maturity: Math.floor(Math.random() * 40) + 60,
-        importance: Math.floor(Math.random() * 30) + 70,
-        dependencies: [],
-        risks: [],
-        opportunities: []
+    // Technology components from infrastructure
+    if (analysis.technologyArchitecture?.infrastructure) {
+      analysis.technologyArchitecture.infrastructure.forEach((infra: string, index: number) => {
+        components.push({
+          id: `tech-infra-${index}`,
+          name: infra,
+          type: 'technology',
+          description: `Infrastructure component: ${infra}`,
+          maturity: Math.floor(Math.random() * 40) + 60,
+          importance: Math.floor(Math.random() * 30) + 70,
+          dependencies: [],
+          risks: ['Scalability limits', 'Security vulnerabilities'],
+          opportunities: ['Cloud migration', 'Automation']
+        })
       })
-    })
+    }
 
+    // Technology components from platforms
+    if (analysis.technologyArchitecture?.platforms) {
+      analysis.technologyArchitecture.platforms.forEach((platform: string, index: number) => {
+        components.push({
+          id: `tech-platform-${index}`,
+          name: platform,
+          type: 'technology',
+          description: `Platform component: ${platform}`,
+          maturity: Math.floor(Math.random() * 40) + 60,
+          importance: Math.floor(Math.random() * 30) + 70,
+          dependencies: [],
+          risks: ['Vendor lock-in', 'Integration complexity'],
+          opportunities: ['Platform modernization', 'DevOps integration']
+        })
+      })
+    }
+
+    console.log('Created components:', components)
     return components
   }
 
@@ -176,25 +221,45 @@ Share a real-world scenario, and I'll transform it into actionable architecture 
             processes: ['Content Management', 'User Experience'],
             systems: ['Web Platform', 'Mobile Apps'],
             gaps: ['Personalization', 'Real-time updates']
+          },
+          {
+            id: 'cap-3',
+            name: 'Data Analytics',
+            description: 'Business intelligence and data-driven insights',
+            maturity: 55,
+            importance: 80,
+            processes: ['Data Collection', 'Analytics Processing'],
+            systems: ['Analytics Platform', 'Data Warehouse'],
+            gaps: ['Real-time processing', 'AI/ML integration']
+          },
+          {
+            id: 'cap-4',
+            name: 'Security & Compliance',
+            description: 'Information security and regulatory compliance',
+            maturity: 75,
+            importance: 95,
+            processes: ['Security Monitoring', 'Compliance Reporting'],
+            systems: ['Security Platform', 'Audit System'],
+            gaps: ['Zero-trust architecture', 'Automated compliance']
           }
         ],
-        processes: ['Customer Journey Management', 'Service Delivery'],
-        stakeholders: ['Business Users', 'IT Team', 'Customers']
+        processes: ['Customer Journey Management', 'Service Delivery', 'Risk Management'],
+        stakeholders: ['Business Users', 'IT Team', 'Customers', 'Compliance Team']
       },
       applicationArchitecture: {
-        applications: ['Customer Portal', 'Mobile App', 'Backend Services', 'Analytics Platform'],
-        services: ['Authentication Service', 'Notification Service', 'Payment Service'],
-        interfaces: ['REST APIs', 'GraphQL', 'Message Queues']
+        applications: ['Customer Portal', 'Mobile App', 'Backend Services', 'Analytics Platform', 'Admin Dashboard', 'Integration Hub'],
+        services: ['Authentication Service', 'Notification Service', 'Payment Service', 'Analytics Service', 'Security Service'],
+        interfaces: ['REST APIs', 'GraphQL', 'Message Queues', 'Event Streams']
       },
       dataArchitecture: {
-        entities: ['Customer', 'Transaction', 'Product', 'Analytics'],
-        flows: ['Customer Data Flow', 'Transaction Processing', 'Analytics Pipeline'],
-        governance: ['Data Quality', 'Privacy Controls', 'Master Data Management']
+        entities: ['Customer', 'Transaction', 'Product', 'Analytics', 'User Session', 'Audit Log'],
+        flows: ['Customer Data Flow', 'Transaction Processing', 'Analytics Pipeline', 'Security Event Flow'],
+        governance: ['Data Quality', 'Privacy Controls', 'Master Data Management', 'Data Lineage']
       },
       technologyArchitecture: {
-        infrastructure: ['Cloud Platform', 'CDN', 'Load Balancers', 'Monitoring'],
-        platforms: ['Container Platform', 'API Gateway', 'Database Cluster'],
-        networks: ['VPN', 'Private Networks', 'Security Zones']
+        infrastructure: ['Cloud Platform', 'CDN', 'Load Balancers', 'Monitoring', 'Container Orchestration', 'Message Brokers'],
+        platforms: ['Container Platform', 'API Gateway', 'Database Cluster', 'Analytics Platform', 'Security Platform'],
+        networks: ['VPN', 'Private Networks', 'Security Zones', 'Edge Networks']
       }
     }
 
@@ -437,6 +502,7 @@ Always provide specific, actionable recommendations rather than generic advice.`
       console.log('Generated Analysis:', analysis)
       console.log('Components:', analysis.vision.components)
       console.log('Capabilities:', analysis.vision.capabilities)
+      console.log('Architecture Store after adding:', architectureStore)
       
       // Add a message showing the analysis results
       const analysisMessage: Message = {

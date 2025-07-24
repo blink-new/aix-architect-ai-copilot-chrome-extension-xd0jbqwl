@@ -40,7 +40,9 @@ export function VisualMapper({ framework, architectureData, components = [], cap
     architectureData, 
     components: components.length, 
     capabilities: capabilities.length,
-    hasData 
+    hasData,
+    componentsData: components,
+    capabilitiesData: capabilities
   })
 
   const visualizationTypes = [
