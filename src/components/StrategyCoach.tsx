@@ -502,7 +502,12 @@ Always provide specific, actionable recommendations rather than generic advice.`
       console.log('Generated Analysis:', analysis)
       console.log('Components:', analysis.vision.components)
       console.log('Capabilities:', analysis.vision.capabilities)
-      console.log('Architecture Store after adding:', architectureStore)
+      console.log('Architecture Store after adding:', {
+        scenarios: architectureStore.scenarios.length,
+        currentVision: architectureStore.currentVision?.title,
+        components: architectureStore.components.length,
+        capabilities: architectureStore.capabilities.length
+      })
       
       // Add a message showing the analysis results
       const analysisMessage: Message = {
@@ -548,6 +553,26 @@ Always provide specific, actionable recommendations rather than generic advice.`
 
   const handleScenarioExample = (example: string) => {
     setScenarioInput(example)
+  }
+
+  const handleTestData = () => {
+    const testAnalysis = createFallbackAnalysis("Test scenario for debugging", framework)
+    architectureStore.addScenario(testAnalysis)
+    
+    console.log('Test data generated:', {
+      components: testAnalysis.vision.components.length,
+      capabilities: testAnalysis.vision.capabilities.length,
+      storeState: {
+        scenarios: architectureStore.scenarios.length,
+        components: architectureStore.components.length,
+        capabilities: architectureStore.capabilities.length
+      }
+    })
+    
+    // Switch to Visual Mapper
+    if (onArchitectureGenerated) {
+      onArchitectureGenerated(testAnalysis)
+    }
   }
 
   return (

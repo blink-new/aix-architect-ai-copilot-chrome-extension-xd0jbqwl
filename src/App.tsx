@@ -5,6 +5,7 @@ import { StrategyCoach } from './components/StrategyCoach'
 import { VisualMapper } from './components/VisualMapper'
 import { ComplianceRadar } from './components/ComplianceRadar'
 import { Toaster } from './components/ui/toaster'
+import { ArchitectureProvider } from './contexts/ArchitectureContext'
 import { useArchitectureStore } from './hooks/useArchitectureStore'
 import type { ScenarioAnalysis } from './types/architecture'
 import './App.css'
@@ -12,7 +13,7 @@ import './App.css'
 export type Framework = 'TOGAF' | 'Zachman' | 'ISO42001' | 'Custom'
 export type ViewMode = 'dashboard' | 'coach' | 'mapper' | 'compliance'
 
-function App() {
+function AppContent() {
   const [selectedFramework, setSelectedFramework] = useState<Framework>('TOGAF')
   const [currentView, setCurrentView] = useState<ViewMode>('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -21,7 +22,12 @@ function App() {
   const handleArchitectureGenerated = (analysis: ScenarioAnalysis) => {
     // Debug logging
     console.log('App received architecture analysis:', analysis)
-    console.log('Architecture store state:', architectureStore)
+    console.log('Architecture store state:', {
+      scenarios: architectureStore.scenarios.length,
+      currentVision: architectureStore.currentVision?.title,
+      components: architectureStore.components.length,
+      capabilities: architectureStore.capabilities.length
+    })
     
     // Switch to Visual Mapper to show the generated components
     setCurrentView('mapper')
@@ -71,6 +77,14 @@ function App() {
       
       <Toaster />
     </div>
+  )
+}
+
+function App() {
+  return (
+    <ArchitectureProvider>
+      <AppContent />
+    </ArchitectureProvider>
   )
 }
 
