@@ -46,7 +46,7 @@ export function VisualMapper({ framework, architectureData, components = [], cap
   })
 
   // Force show data if we have any components or capabilities
-  const shouldShowData = components.length > 0 || capabilities.length > 0
+  const shouldShowData = true // Always show data when components exist
 
   const visualizationTypes = [
     { id: 'heatmap', label: 'Capability Heatmap', icon: BarChart3 },
@@ -235,7 +235,7 @@ export function VisualMapper({ framework, architectureData, components = [], cap
 function CapabilityHeatmap({ capabilities, shouldShowData }: { capabilities: BusinessCapability[], shouldShowData: boolean }) {
   console.log('CapabilityHeatmap render:', { capabilities: capabilities.length, shouldShowData })
   
-  if (!shouldShowData || capabilities.length === 0) {
+  if (capabilities.length === 0) {
     return (
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-900">Business Capability Heatmap</h3>
@@ -304,7 +304,7 @@ function ArchitectureLayers({ components, framework, shouldShowData }: {
 }) {
   console.log('ArchitectureLayers render:', { components: components.length, shouldShowData })
   
-  if (!shouldShowData || components.length === 0) {
+  if (components.length === 0) {
     return (
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-900">{framework} Architecture Layers</h3>
@@ -384,7 +384,7 @@ function ArchitectureLayers({ components, framework, shouldShowData }: {
 function DependencyNetwork({ components, shouldShowData }: { components: ArchitectureComponent[], shouldShowData: boolean }) {
   console.log('DependencyNetwork render:', { components: components.length, shouldShowData })
   
-  if (!shouldShowData || components.length === 0) {
+  if (components.length === 0) {
     return (
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-900">System Dependency Network</h3>
@@ -443,7 +443,7 @@ function StrategicRoadmap({ architectureData, shouldShowData }: {
     shouldShowData 
   })
   
-  if (!shouldShowData || !architectureData?.timeline || architectureData.timeline.length === 0) {
+  if (!architectureData?.timeline || architectureData.timeline.length === 0) {
     return (
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-900">Strategic Implementation Roadmap</h3>
